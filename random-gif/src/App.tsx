@@ -3,22 +3,38 @@ import axios from "axios";
 import Icon from "@mui/material/Icon";
 import InputAdornment from "@mui/material/InputAdornment";
 import TextField from "@mui/material/TextField";
+import CancelIcon from '@mui/icons-material/Cancel';
 import SearchIcon from "@mui/icons-material/Search";
 import { giphyApiKey } from "./keys";
 import "./App.css";
 
 const initialState = {
+  searchText: "",
   src: "",
   title: "",
   rating: "",
 };
 
-const reducer = (_state: any, action: any) => {
-  return {
-    src: action.embed_url,
-    title: action.title,
-    rating: action.rating,
-  };
+const reducer = (state: any, action: any) => {
+  switch (action.type) {
+    case 'NEW_GIF':
+      return {
+        ...state,
+        src: action.embed_url,
+        title: action.title,
+        rating: action.rating,
+      };
+    case 'SET_TEXT':
+      return {
+        ...state,
+        searchText: action.searchText,
+      }
+    case 'CLEAR_TEXT':
+      return {
+        ...state,
+        searchText: "",
+      }
+  }
 };
 
 function App() {
@@ -27,7 +43,7 @@ function App() {
 
   const getNewGif = () => {
     axios.get(`https://api.giphy.com/v1/gifs/random?api_key=${giphyApiKey}`)
-      .then(response => dispatch(response.data.data))
+      .then(response => dispatch({type: 'NEW_GIF', ...response.data.data}))
       .catch(error => console.log(error));
   };
 
@@ -42,16 +58,28 @@ function App() {
       <TextField
         label="Search"
         variant="outlined"
+        value={state.searchText}
         InputProps={{
-          endAdornment: (
-            <InputAdornment position="end">
+          startAdornment: (
+            <InputAdornment position="start">
               <Icon>
                 <SearchIcon />
               </Icon>
             </InputAdornment>
           ),
+          endAdornment: (
+            <InputAdornment position="end">
+              {state.searchText && (
+                <Icon onClick={() => dispatch({ type: "CLEAR_TEXT" })}>
+                  <CancelIcon />
+                </Icon>
+              )}
+            </InputAdornment>
+          ),
         }}
-        onChange={(event) => console.log(event.target.value)}
+        onChange={(event) =>
+          dispatch({ type: "SET_TEXT", searchText: event.target.value })
+        }
       />
       <iframe
         src={state.src}
