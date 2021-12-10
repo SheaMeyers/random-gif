@@ -3,12 +3,16 @@ import axios from "axios";
 import Icon from "@mui/material/Icon";
 import InputAdornment from "@mui/material/InputAdornment";
 import TextField from "@mui/material/TextField";
-import CancelIcon from '@mui/icons-material/Cancel';
+import CancelIcon from "@mui/icons-material/Cancel";
 import SearchIcon from "@mui/icons-material/Search";
 import { giphyApiKey } from "./keys";
+import DisplayGifModal from "./GifModal";
 import "./App.css";
+import "./Modal.css";
 
 const initialState = {
+  displayModalGif: false,
+  modalGif: "",
   searchedGifs: [],
   isSearchTextFocused: false,
   searchText: "",
@@ -19,38 +23,50 @@ const initialState = {
 
 const reducer = (state: any, action: any) => {
   switch (action.type) {
-    case 'NEW_GIF':
+    case "NEW_GIF":
       return {
         ...state,
         src: action.embed_url,
         title: action.title,
         rating: action.rating,
       };
-    case 'SET_TEXT':
+    case "SET_TEXT":
       return {
         ...state,
         searchText: action.searchText,
-      }
-    case 'CLEAR_TEXT':
+      };
+    case "CLEAR_TEXT":
       return {
         ...state,
         searchText: "",
-      }
-    case 'SEARCH_TEXT_FOCUSED': 
+      };
+    case "SEARCH_TEXT_FOCUSED":
       return {
         ...state,
         isSearchTextFocused: true,
-      }
-    case 'SEARCH_TEXT_UNFOCUSED': 
+      };
+    case "SEARCH_TEXT_UNFOCUSED":
       return {
         ...state,
         isSearchTextFocused: false,
-      }
-    case 'SEARCHED_GIFS':
+      };
+    case "SEARCHED_GIFS":
       return {
         ...state,
-        searchedGifs: action.searchedGifs
-      }
+        searchedGifs: action.searchedGifs,
+      };
+    case "SET_MODAL_GIF":
+      return {
+        ...state,
+        displayModalGif: true,
+        modalGif: action.modalGif,
+      };
+    case "CLOSE_MODAL":
+      return {
+        ...state,
+        displayModalGif: false,
+        modalGif: "",
+      };
   }
 };
 
@@ -58,10 +74,13 @@ function App() {
   const [state, dispatch] = useReducer(reducer, initialState);
   const newGifInterval = 10000; // 10 seconds
 
+  const closeGifModal = () => dispatch({ type: "CLOSE_MODAL " });
+
   const getNewGif = () => {
-    axios.get(`https://api.giphy.com/v1/gifs/random?api_key=${giphyApiKey}`)
-      .then(response => dispatch({type: 'NEW_GIF', ...response.data.data}))
-      .catch(error => console.log(error));
+    console.log("Would get new gif");
+    // axios.get(`https://api.giphy.com/v1/gifs/random?api_key=${giphyApiKey}`)
+    //   .then(response => dispatch({type: 'NEW_GIF', ...response.data.data}))
+    //   .catch(error => console.log(error));
   };
 
   const getSearchGifs = async () => {
@@ -69,19 +88,24 @@ function App() {
       return;
     }
 
-    const result = await axios.get(`https://api.giphy.com/v1/gifs/search?api_key=${giphyApiKey}&q=${state.searchText}&limit=10`);
+    const result = await axios.get(
+      `https://api.giphy.com/v1/gifs/search?api_key=${giphyApiKey}&q=${state.searchText}&limit=1`
+    );
     const searchedGifs = result.data.data.map((obj: any, index: number) => {
-      return <iframe
-        src={obj.embed_url}
-        title="random-gif"
-        width="160"
-        height="90"
-        frameBorder="0"
-        key={index}
-      />;
+      return (
+          <span
+            onClick={() => {
+              console.log("Calling action to open the gif")
+              dispatch({ type: 'SET_MODAL_GIF', modalGif: obj.embed_url })
+            }}
+            key={index}
+          >
+            {obj.embed_url}
+          </span>
+      );
     });
-    dispatch({ type: 'SEARCHED_GIFS', searchedGifs })
-  }
+    dispatch({ type: "SEARCHED_GIFS", searchedGifs });
+  };
 
   useEffect(() => {
     getNewGif();
@@ -95,8 +119,8 @@ function App() {
         label="Search"
         variant="outlined"
         value={state.searchText}
-        onFocus={() => dispatch({ type: 'SEARCH_TEXT_FOCUSED' })}
-        onBlur={() => dispatch({ type: 'SEARCH_TEXT_UNFOCUSED' })}
+        onFocus={() => dispatch({ type: "SEARCH_TEXT_FOCUSED" })}
+        // onBlur={() => dispatch({ type: "SEARCH_TEXT_UNFOCUSED" })}
         InputProps={{
           startAdornment: (
             <InputAdornment position="start">
@@ -115,44 +139,48 @@ function App() {
             </InputAdornment>
           ),
         }}
-        onChange={(event) =>{
+        onChange={(event) => {
           dispatch({ type: "SET_TEXT", searchText: event.target.value });
           getSearchGifs();
         }}
       />
-      { 
-      state.isSearchTextFocused ? 
-      // Display search results
-      <>
-        <p>Search results</p>
-        {state.searchedGifs}
-      </>
-      :
-      // No search text, display random gif
-      <>
-      <iframe
-        src={state.src}
-        title="random-gif"
-        width="480"
-        height="270"
-        frameBorder="0"
+      {state.isSearchTextFocused ? (
+        // Display search results
+        <>
+          <p>Search results</p>
+          {state.searchedGifs}
+        </>
+      ) : (
+        // No search text, display random gif
+        <>
+          <iframe
+            src={state.src}
+            title="random-gif"
+            width="480"
+            height="270"
+            frameBorder="0"
+          />
+          <div className="Gif-Info">
+            <div>
+              <p>
+                <b>Title</b>
+              </p>
+              <p>{state.title}</p>
+            </div>
+            <div>
+              <p>
+                <b>Rating</b>
+              </p>
+              <p>{state.rating.toUpperCase()}</p>
+            </div>
+          </div>
+        </>
+      )}
+      <DisplayGifModal
+        isOpen={state.displayModalGif}
+        handleModalClose={closeGifModal}
+        gifSrc={state.modalGif}
       />
-      <div className="Gif-Info">
-        <div>
-          <p>
-            <b>Title</b>
-          </p>
-          <p>{state.title}</p>
-        </div>
-        <div>
-          <p>
-            <b>Rating</b>
-          </p>
-          <p>{state.rating.toUpperCase()}</p>
-        </div>
-      </div>
-      </>
-      }
     </div>
   );
 }
