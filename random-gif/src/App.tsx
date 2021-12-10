@@ -67,6 +67,8 @@ const reducer = (state: any, action: any) => {
         displayModalGif: false,
         modalGif: "",
       };
+    default:
+      return state;
   }
 };
 
@@ -77,10 +79,13 @@ function App() {
   const closeGifModal = () => dispatch({ type: "CLOSE_MODAL" });
 
   const getNewGif = () => {
-    console.log("Would get new gif");
-    // axios.get(`https://api.giphy.com/v1/gifs/random?api_key=${giphyApiKey}`)
-    //   .then(response => dispatch({type: 'NEW_GIF', ...response.data.data}))
-    //   .catch(error => console.log(error));
+    if (state.searchText) {
+      return;
+    }
+    
+    axios.get(`https://api.giphy.com/v1/gifs/random?api_key=${giphyApiKey}`)
+      .then(response => dispatch({ ...response.data.data, type: 'NEW_GIF' }))
+      .catch(error => console.log(error));
   };
 
   const getSearchGifs = async () => {
@@ -88,23 +93,20 @@ function App() {
       return;
     }
     const result = await axios.get(
-      `https://api.giphy.com/v1/gifs/search?api_key=${giphyApiKey}&q=${state.searchText}&limit=1`
+      `https://api.giphy.com/v1/gifs/search?api_key=${giphyApiKey}&q=${state.searchText}&limit=10`
     );
     const searchedGifs = result.data.data.map((obj: any, index: number) => {
       return (
         <img
           src={obj.images["480w_still"].url}
+          height="200"
+          width="250"
           alt={obj.title}
-          onClick={() => {
-            console.log("Calling action to open the gif");
-            dispatch({ type: "SET_MODAL_GIF", modalGif: obj.embed_url });
-          }}
+          onClick={() => dispatch({ type: "SET_MODAL_GIF", modalGif: obj.embed_url })}
           key={index}
         />
       );
     });
-    console.log('Dispatching search gifs');
-    console.log(searchedGifs);
     dispatch({ type: "SEARCHED_GIFS", searchedGifs });
   };
 
