@@ -21,8 +21,8 @@ const DisplayGifModal = (props: Props) => {
         <iframe
             src={props.gifSrc}
             title="random-gif"
-            width="160"
-            height="90"
+            width="480"
+            height="270"
             frameBorder="0"
         />
       </div>

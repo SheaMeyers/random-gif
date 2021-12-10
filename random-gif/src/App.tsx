@@ -1,5 +1,6 @@
 import React, { useReducer, useEffect } from "react";
 import axios from "axios";
+import Button from "@mui/material/Button";
 import Icon from "@mui/material/Icon";
 import InputAdornment from "@mui/material/InputAdornment";
 import TextField from "@mui/material/TextField";
@@ -48,6 +49,7 @@ const reducer = (state: any, action: any) => {
     case "SEARCH_TEXT_UNFOCUSED":
       return {
         ...state,
+        searchText: "",
         isSearchTextFocused: false,
       };
     case "SEARCHED_GIFS":
@@ -82,7 +84,7 @@ function App() {
     if (state.searchText) {
       return;
     }
-    
+
     axios.get(`https://api.giphy.com/v1/gifs/random?api_key=${giphyApiKey}`)
       .then(response => dispatch({ ...response.data.data, type: 'NEW_GIF' }))
       .catch(error => console.log(error));
@@ -118,35 +120,44 @@ function App() {
 
   return (
     <div className="App">
-      <TextField
-        label="Search"
-        variant="outlined"
-        value={state.searchText}
-        onFocus={() => dispatch({ type: "SEARCH_TEXT_FOCUSED" })}
-        // onBlur={() => dispatch({ type: "SEARCH_TEXT_UNFOCUSED" })}
-        InputProps={{
-          startAdornment: (
-            <InputAdornment position="start">
-              <Icon>
-                <SearchIcon />
-              </Icon>
-            </InputAdornment>
-          ),
-          endAdornment: (
-            <InputAdornment position="end">
-              {state.searchText && (
-                <Icon onClick={() => dispatch({ type: "CLEAR_TEXT" })}>
-                  <CancelIcon />
+      <div>
+        <TextField
+          label="Search"
+          variant="outlined"
+          value={state.searchText}
+          onFocus={() => dispatch({ type: "SEARCH_TEXT_FOCUSED" })}
+          InputProps={{
+            startAdornment: (
+              <InputAdornment position="start">
+                <Icon>
+                  <SearchIcon />
                 </Icon>
-              )}
-            </InputAdornment>
-          ),
-        }}
-        onChange={(event) => {
-          dispatch({ type: "SET_TEXT", searchText: event.target.value });
-          getSearchGifs();
-        }}
-      />
+              </InputAdornment>
+            ),
+            endAdornment: (
+              <InputAdornment position="end">
+                {state.searchText && (
+                  <Icon onClick={() => dispatch({ type: "CLEAR_TEXT" })}>
+                    <CancelIcon />
+                  </Icon>
+                )}
+              </InputAdornment>
+            ),
+          }}
+          onChange={(event) => {
+            dispatch({ type: "SET_TEXT", searchText: event.target.value });
+            getSearchGifs();
+          }}
+        />
+        <Button 
+          variant="contained" 
+          color="error"
+          onClick={() => dispatch({ type: "SEARCH_TEXT_UNFOCUSED" })}
+        >
+            Cancel
+        </Button>
+      </div>
+      <br/>
       {state.isSearchTextFocused ? (
         // Display search results
         <>
