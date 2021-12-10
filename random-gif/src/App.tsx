@@ -9,6 +9,8 @@ import { giphyApiKey } from "./keys";
 import "./App.css";
 
 const initialState = {
+  searchedGifs: [],
+  isSearchTextFocused: false,
   searchText: "",
   src: "",
   title: "",
@@ -34,6 +36,21 @@ const reducer = (state: any, action: any) => {
         ...state,
         searchText: "",
       }
+    case 'SEARCH_TEXT_FOCUSED': 
+      return {
+        ...state,
+        isSearchTextFocused: true,
+      }
+    case 'SEARCH_TEXT_UNFOCUSED': 
+      return {
+        ...state,
+        isSearchTextFocused: false,
+      }
+    case 'SEARCHED_GIFS':
+      return {
+        ...state,
+        searchedGifs: action.searchedGifs
+      }
   }
 };
 
@@ -47,6 +64,25 @@ function App() {
       .catch(error => console.log(error));
   };
 
+  const getSearchGifs = async () => {
+    if (state.searchText < 2) {
+      return;
+    }
+
+    const result = await axios.get(`https://api.giphy.com/v1/gifs/search?api_key=${giphyApiKey}&q=${state.searchText}&limit=10`);
+    const searchedGifs = result.data.data.map((obj: any, index: number) => {
+      return <iframe
+        src={obj.embed_url}
+        title="random-gif"
+        width="160"
+        height="90"
+        frameBorder="0"
+        key={index}
+      />;
+    });
+    dispatch({ type: 'SEARCHED_GIFS', searchedGifs })
+  }
+
   useEffect(() => {
     getNewGif();
     const interval = setInterval(getNewGif, newGifInterval);
@@ -59,6 +95,8 @@ function App() {
         label="Search"
         variant="outlined"
         value={state.searchText}
+        onFocus={() => dispatch({ type: 'SEARCH_TEXT_FOCUSED' })}
+        onBlur={() => dispatch({ type: 'SEARCH_TEXT_UNFOCUSED' })}
         InputProps={{
           startAdornment: (
             <InputAdornment position="start">
@@ -77,10 +115,21 @@ function App() {
             </InputAdornment>
           ),
         }}
-        onChange={(event) =>
-          dispatch({ type: "SET_TEXT", searchText: event.target.value })
-        }
+        onChange={(event) =>{
+          dispatch({ type: "SET_TEXT", searchText: event.target.value });
+          getSearchGifs();
+        }}
       />
+      { 
+      state.isSearchTextFocused ? 
+      // Display search results
+      <>
+        <p>Search results</p>
+        {state.searchedGifs}
+      </>
+      :
+      // No search text, display random gif
+      <>
       <iframe
         src={state.src}
         title="random-gif"
@@ -102,6 +151,8 @@ function App() {
           <p>{state.rating.toUpperCase()}</p>
         </div>
       </div>
+      </>
+      }
     </div>
   );
 }
