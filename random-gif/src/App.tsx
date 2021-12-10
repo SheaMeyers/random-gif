@@ -74,7 +74,7 @@ function App() {
   const [state, dispatch] = useReducer(reducer, initialState);
   const newGifInterval = 10000; // 10 seconds
 
-  const closeGifModal = () => dispatch({ type: "CLOSE_MODAL " });
+  const closeGifModal = () => dispatch({ type: "CLOSE_MODAL" });
 
   const getNewGif = () => {
     console.log("Would get new gif");
@@ -87,23 +87,24 @@ function App() {
     if (state.searchText < 2) {
       return;
     }
-
     const result = await axios.get(
       `https://api.giphy.com/v1/gifs/search?api_key=${giphyApiKey}&q=${state.searchText}&limit=1`
     );
     const searchedGifs = result.data.data.map((obj: any, index: number) => {
       return (
-          <span
-            onClick={() => {
-              console.log("Calling action to open the gif")
-              dispatch({ type: 'SET_MODAL_GIF', modalGif: obj.embed_url })
-            }}
-            key={index}
-          >
-            {obj.embed_url}
-          </span>
+        <img
+          src={obj.images["480w_still"].url}
+          alt={obj.title}
+          onClick={() => {
+            console.log("Calling action to open the gif");
+            dispatch({ type: "SET_MODAL_GIF", modalGif: obj.embed_url });
+          }}
+          key={index}
+        />
       );
     });
+    console.log('Dispatching search gifs');
+    console.log(searchedGifs);
     dispatch({ type: "SEARCHED_GIFS", searchedGifs });
   };
 
@@ -148,7 +149,7 @@ function App() {
         // Display search results
         <>
           <p>Search results</p>
-          {state.searchedGifs}
+          <p>{state.searchedGifs}</p>
         </>
       ) : (
         // No search text, display random gif
