@@ -2,6 +2,7 @@ import "../css/DisplayGif.css";
 
 interface Props {
     src: string;
+    url: string;
     title: string;
     rating: string;
 }
@@ -16,18 +17,14 @@ const DisplayGif = (props: Props) => {
             height="270"
             frameBorder="0"
           />
+          <br/><br/>
           <div className="Gif-Info">
-            <div>
-              <p>
-                <b>Title</b>
-              </p>
-              <p>{props.title}</p>
+            <div className="Gif-Info__Title-and-Rating">
+              <p className="Gif-Info__Title">{props.title}</p>
+              <a href={props.url}>{props.url}</a>
             </div>
-            <div>
-              <p>
-                <b>Rating</b>
-              </p>
-              <p>{props.rating.toUpperCase()}</p>
+            <div className="Gif-Info__Rating">
+              <b>{props.rating.toUpperCase()}</b>
             </div>
           </div>
         </>

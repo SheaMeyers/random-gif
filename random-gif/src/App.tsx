@@ -6,17 +6,16 @@ import SearchBar from "./components/SearchBar";
 import DisplayGifModal from "./modals/DisplayGifModal";
 import "./css/App.css";
 
-
 const initialState = {
   shouldDisplayModalGif: false,
   isSearchingForGifs: false,
   searchText: "",
   src: "",
+  url: "",
   title: "",
   rating: "",
   searchedGifs: [],
 };
-
 
 const reducer = (state: any, action: any) => {
   switch (action.type) {
@@ -24,6 +23,7 @@ const reducer = (state: any, action: any) => {
       return {
         ...state,
         src: action.embed_url,
+        url: action.bitly_url,
         title: action.title,
         rating: action.rating,
       };
@@ -47,6 +47,7 @@ const reducer = (state: any, action: any) => {
       return {
         ...state,
         searchText: "",
+        searchedGifs: [],
         isSearchingForGifs: false,
       };
     case "SEARCHED_GIFS":
@@ -59,6 +60,7 @@ const reducer = (state: any, action: any) => {
         ...state,
         shouldDisplayModalGif: true,
         src: action.embed_url,
+        url: action.bitly_url,
         title: action.title,
         rating: action.rating,
       };
@@ -73,7 +75,6 @@ const reducer = (state: any, action: any) => {
   }
 };
 
-
 const App = () => {
   const newGifInterval = 10000; // 10 seconds
   const gifSearchLimit = 10; // number of results
@@ -81,11 +82,15 @@ const App = () => {
   const [state, dispatch] = useReducer(reducer, initialState);
 
   const gifComponent = (
-    <DisplayGif src={state.src} title={state.title} rating={state.rating} />
+    <DisplayGif
+      src={state.src}
+      url={state.url}
+      title={state.title}
+      rating={state.rating}
+    />
   );
 
   const getNewRandomGif = () => {
-    return;
     axios
       .get(`https://api.giphy.com/v1/gifs/random?api_key=${giphyApiKey}`)
       .then((response) => dispatch({ ...response.data.data, type: "NEW_GIF" }))
@@ -100,25 +105,28 @@ const App = () => {
     const response = await axios.get(
       `https://api.giphy.com/v1/gifs/search?api_key=${giphyApiKey}&q=${state.searchText}&limit=${gifSearchLimit}`
     );
-    const searchedGifs = response.data.data.map((result: any, index: number) => {
-      return (
-        <img
-          src={result.images["480w_still"].url}
-          height="200"
-          width="250"
-          alt={result.title}
-          onClick={() =>
-            dispatch({
-              type: "SET_MODAL_GIF",
-              embed_url: result.embed_url,
-              title: result.title,
-              rating: result.rating,
-            })
-          }
-          key={index}
-        />
-      );
-    });
+    const searchedGifs = response.data.data.map(
+      (result: any, index: number) => {
+        return (
+          <img
+            src={result.images["480w_still"].url}
+            height="200"
+            width="250"
+            alt={result.title}
+            onClick={() =>
+              dispatch({
+                type: "SET_MODAL_GIF",
+                embed_url: result.embed_url,
+                bitly_url: result.bitly_url,
+                title: result.title,
+                rating: result.rating,
+              })
+            }
+            key={index}
+          />
+        );
+      }
+    );
     dispatch({ type: "SEARCHED_GIFS", searchedGifs });
   };
 
@@ -128,7 +136,8 @@ const App = () => {
     dispatch({ type: "SET_TEXT", searchText });
     getSearchGifElements();
   };
-  const handleSearchCancelClick = () => dispatch({ type: "SEARCH_TEXT_UNFOCUSED" });
+  const handleSearchCancelClick = () =>
+    dispatch({ type: "SEARCH_TEXT_UNFOCUSED" });
   const handleSearchFocus = () => dispatch({ type: "SEARCH_TEXT_FOCUSED" });
   const handleClearSearchText = () => dispatch({ type: "CLEAR_TEXT" });
 
@@ -172,6 +181,6 @@ const App = () => {
       />
     </div>
   );
-}
+};
 
 export default App;

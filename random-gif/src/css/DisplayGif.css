@@ -2,3 +2,21 @@
     display: flex;
     justify-content: space-around;
 }
+
+.Gif-Info__Title-and-Rating {
+    text-align: left;
+}
+
+.Gif-Info__Title {
+    margin: 0;
+}
+
+.Gif-Info__Rating {
+    height: 40px;
+    width: 40px;
+    background-color: #bbb;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
