@@ -1,6 +1,12 @@
 .Gif-Info {
     display: flex;
-    justify-content: space-around;
+    justify-content: center;
+}
+
+.Gif-Info__Container {
+    display: flex;
+    justify-content: space-between;
+    width: 480px;
 }
 
 .Gif-Info__Title-and-Rating {
