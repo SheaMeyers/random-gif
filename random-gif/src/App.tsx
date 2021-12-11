@@ -1,27 +1,20 @@
 import React, { useReducer, useEffect } from "react";
 import axios from "axios";
-import Button from "@mui/material/Button";
-import Icon from "@mui/material/Icon";
-import InputAdornment from "@mui/material/InputAdornment";
-import TextField from "@mui/material/TextField";
-import CancelIcon from "@mui/icons-material/Cancel";
-import SearchIcon from "@mui/icons-material/Search";
 import { giphyApiKey } from "./keys";
-import DisplayGifModal from "./DisplayGifModal";
-import "./App.css";
-
+import DisplayGif from "./components/DisplayGif";
+import SearchBar from "./components/SearchBar";
+import DisplayGifModal from "./modals/DisplayGifModal";
+import "./css/App.css";
 
 const initialState = {
-  displayModalGif: false,
-  modalGif: "",
-  searchedGifs: [],
-  isSearchTextFocused: false,
+  shouldDisplayModalGif: false,
+  isSearchingForGifs: false,
   searchText: "",
   src: "",
   title: "",
   rating: "",
+  searchedGifs: [],
 };
-
 
 const reducer = (state: any, action: any) => {
   switch (action.type) {
@@ -45,13 +38,13 @@ const reducer = (state: any, action: any) => {
     case "SEARCH_TEXT_FOCUSED":
       return {
         ...state,
-        isSearchTextFocused: true,
+        isSearchingForGifs: true,
       };
     case "SEARCH_TEXT_UNFOCUSED":
       return {
         ...state,
         searchText: "",
-        isSearchTextFocused: false,
+        isSearchingForGifs: false,
       };
     case "SEARCHED_GIFS":
       return {
@@ -61,7 +54,7 @@ const reducer = (state: any, action: any) => {
     case "SET_MODAL_GIF":
       return {
         ...state,
-        displayModalGif: true,
+        shouldDisplayModalGif: true,
         src: action.embed_url,
         title: action.title,
         rating: action.rating,
@@ -69,37 +62,34 @@ const reducer = (state: any, action: any) => {
     case "CLOSE_MODAL":
       return {
         ...state,
-        displayModalGif: false,
+        shouldDisplayModalGif: false,
       };
     default:
-      console.warn(`Reducer action ${action.type} did not match any cases`)
+      console.warn(`Reducer action ${action.type} did not match any cases`);
       return state;
   }
 };
 
 function App() {
   const newGifInterval = 10000; // 10 seconds
-  const gifSearchLimit = 10;  // number of results
+  const gifSearchLimit = 10; // number of results
 
   const [state, dispatch] = useReducer(reducer, initialState);
 
+  const gifComponent = (
+    <DisplayGif src={state.src} title={state.title} rating={state.rating} />
+  );
+
+  // TODO Move to utils file?
   const getNewRandomGif = () => {
-    axios.get(`https://api.giphy.com/v1/gifs/random?api_key=${giphyApiKey}`)
-      .then(response => dispatch({ ...response.data.data, type: 'NEW_GIF' }))
-      .catch(error => console.log(error));
-  }
-
-  const closeGifModal = () => dispatch({ type: "CLOSE_MODAL" });
-
-  const getNewGif = () => {
-    if (state.isSearchTextFocused) {
-      return;
-    }
-
-    getNewRandomGif();
+    axios
+      .get(`https://api.giphy.com/v1/gifs/random?api_key=${giphyApiKey}`)
+      .then((response) => dispatch({ ...response.data.data, type: "NEW_GIF" }))
+      .catch((error) => console.log(error));
   };
 
-  const getSearchGifs = async () => {
+  // TODO Move to utils file?
+  const getSearchGifElements = async () => {
     if (state.searchText < 2) {
       return;
     }
@@ -117,7 +107,7 @@ function App() {
           onClick={() =>
             dispatch({
               type: "SET_MODAL_GIF",
-              src: obj.embed_url,
+              embed_url: obj.embed_url,
               title: obj.title,
               rating: obj.rating,
             })
@@ -129,57 +119,35 @@ function App() {
     dispatch({ type: "SEARCHED_GIFS", searchedGifs });
   };
 
+  const closeGifModal = () => dispatch({ type: "CLOSE_MODAL" });
+
+  const handleSearchTextChange = (searchText: string) => {
+    dispatch({ type: "SET_TEXT", searchText });
+    getSearchGifElements();
+  };
+  const handleSearchCancelClick = () => dispatch({ type: "SEARCH_TEXT_UNFOCUSED" });
+  const handleSearchFocus = () => dispatch({ type: "SEARCH_TEXT_FOCUSED" });
+  const handleClearSearchText = () => dispatch({ type: "CLEAR_TEXT" });
+
   useEffect(() => {
-    getNewGif();
-    const interval = setInterval(getNewGif, newGifInterval);
-    return () => clearInterval(interval);
-  });
+    if (!state.isSearchingForGifs) {
+      getNewRandomGif();
+      const interval = setInterval(getNewRandomGif, newGifInterval);
+      return () => clearInterval(interval);
+    }
+  }, [state.isSearchingForGifs]);
 
   return (
     <div className="App">
-      <div>
-        {/* TODO Make this a search component
-        - Pass value down into search component
-        - Pass function that component calls for updated value
-        - Pass function for button to call to cancel text */}
-        <TextField
-          label="Search"
-          variant="outlined"
-          value={state.searchText}
-          onFocus={() => dispatch({ type: "SEARCH_TEXT_FOCUSED" })}
-          InputProps={{
-            startAdornment: (
-              <InputAdornment position="start">
-                <Icon>
-                  <SearchIcon />
-                </Icon>
-              </InputAdornment>
-            ),
-            endAdornment: (
-              <InputAdornment position="end">
-                {state.searchText && (
-                  <Icon onClick={() => dispatch({ type: "CLEAR_TEXT" })}>
-                    <CancelIcon />
-                  </Icon>
-                )}
-              </InputAdornment>
-            ),
-          }}
-          onChange={(event) => {
-            dispatch({ type: "SET_TEXT", searchText: event.target.value });
-            getSearchGifs();
-          }}
-        />
-        <Button 
-          variant="contained" 
-          color="error"
-          onClick={() => dispatch({ type: "SEARCH_TEXT_UNFOCUSED" })}
-        >
-            Cancel
-        </Button>
-      </div>
-      <br/>
-      {state.isSearchTextFocused ? (
+      <SearchBar
+        searchText={state.searchText}
+        handleOnFocus={handleSearchFocus}
+        handleClearText={handleClearSearchText}
+        handleSearchTextChange={handleSearchTextChange}
+        handleSearchCancel={handleSearchCancelClick}
+      />
+      <br />
+      {state.isSearchingForGifs ? (
         // Display search results
         <>
           <p>Search results</p>
@@ -187,39 +155,15 @@ function App() {
         </>
       ) : (
         // No search text, display random gif
-        // TODO Make this a component
-        // - Pass down values into component
-        // - Reuse the new component in the modal
         <>
           <p>Random selected gif: </p>
-          <iframe
-            src={state.src}
-            title="random-gif"
-            width="480"
-            height="270"
-            frameBorder="0"
-          />
-          <div className="Gif-Info">
-            <div>
-              <p>
-                <b>Title</b>
-              </p>
-              <p>{state.title}</p>
-            </div>
-            <div>
-              <p>
-                <b>Rating</b>
-              </p>
-              <p>{state.rating.toUpperCase()}</p>
-            </div>
-          </div>
+          {gifComponent}
         </>
       )}
-      {/* Pass gif component here?  Into the modal? */}
       <DisplayGifModal
-        isOpen={state.displayModalGif}
+        isOpen={state.shouldDisplayModalGif}
         handleModalClose={closeGifModal}
-        gifSrc={state.src}
+        displayGifComponent={gifComponent}
       />
     </div>
   );

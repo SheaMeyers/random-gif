@@ -1,11 +1,11 @@
 import Modal from "react-modal";
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
-import './Modal.css';
+import '../css/Modal.css';
 
 interface Props {
   isOpen: boolean;
   handleModalClose: Function;
-  gifSrc: string;
+  displayGifComponent: React.ReactElement;
 }
 
 const DisplayGifModal = (props: Props) => {
@@ -18,14 +18,7 @@ const DisplayGifModal = (props: Props) => {
     >
       <div>
         <ArrowBackIosIcon onClick={() => props.handleModalClose()}/>
-        {/* TODO Use new component here */}
-        <iframe
-            src={props.gifSrc}
-            title="random-gif"
-            width="480"
-            height="270"
-            frameBorder="0"
-        />
+        {props.displayGifComponent}
       </div>
     </Modal>
   );
