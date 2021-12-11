@@ -4,6 +4,7 @@ import InputAdornment from "@mui/material/InputAdornment";
 import TextField from "@mui/material/TextField";
 import CancelIcon from "@mui/icons-material/Cancel";
 import SearchIcon from "@mui/icons-material/Search";
+import '../css/SearchBar.css';
 
 interface Props {
   displayCancelButton: boolean;
@@ -16,7 +17,7 @@ interface Props {
 
 const SearchBar = (props: Props) => {
   return (
-    <>
+    <div className="Search-Bar">
       <TextField
         label="Search"
         variant="outlined"
@@ -51,7 +52,7 @@ const SearchBar = (props: Props) => {
           Cancel
         </Button>
       )}
-    </>
+    </div>
   );
 };
 

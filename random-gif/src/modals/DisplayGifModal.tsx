@@ -5,6 +5,7 @@ import '../css/Modal.css';
 interface Props {
   isOpen: boolean;
   handleModalClose: Function;
+  title: string;
   displayGifComponent: React.ReactElement;
 }
 
@@ -17,10 +18,13 @@ const DisplayGifModal = (props: Props) => {
       closeTimeoutMS={200}
       className="modal"
     >
-      <div>
-        <ArrowBackIosIcon onClick={() => props.handleModalClose()}/>
+      <>
+        <span className="Modal-Header">
+          <ArrowBackIosIcon onClick={() => props.handleModalClose()}/>
+          <h2>{props.title}</h2>
+        </span>
         {props.displayGifComponent}
-      </div>
+      </>
     </Modal>
   );
 };

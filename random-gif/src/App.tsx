@@ -85,6 +85,7 @@ const App = () => {
   );
 
   const getNewRandomGif = () => {
+    return;
     axios
       .get(`https://api.giphy.com/v1/gifs/random?api_key=${giphyApiKey}`)
       .then((response) => dispatch({ ...response.data.data, type: "NEW_GIF" }))
@@ -166,6 +167,7 @@ const App = () => {
       <DisplayGifModal
         isOpen={state.shouldDisplayModalGif}
         handleModalClose={closeGifModal}
+        title={state.title}
         displayGifComponent={gifComponent}
       />
     </div>

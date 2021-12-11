@@ -19,11 +19,6 @@
     opacity: 0;
 }
 
-.ReactModal__Content>div {
-    display: flex;
-    flex-direction: column;
-}
-
 .modal {
     background: white;
     color: black;
@@ -31,4 +26,13 @@
     outline: auto;
     padding: 50px;
     text-align: center;
+}
+
+.Modal-Header {
+    display: flex;
+    align-items: center;
+}
+
+.Modal-Header>h2 {
+    flex-grow: 1;
 }
