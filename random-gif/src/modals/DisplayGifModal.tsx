@@ -13,7 +13,7 @@ const DisplayGifModal = (props: Props) => {
     <Modal
       appElement={document.body}
       isOpen={props.isOpen}
-      contentLabel="Forgot Password Modal"
+      contentLabel="Display Gif Modal"
       closeTimeoutMS={200}
       className="modal"
     >
