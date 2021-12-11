@@ -113,6 +113,7 @@ const App = () => {
             height="200"
             width="250"
             alt={result.title}
+            style={{cursor: 'pointer'}}
             onClick={() =>
               dispatch({
                 type: "SET_MODAL_GIF",

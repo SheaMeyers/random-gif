@@ -20,7 +20,10 @@ const DisplayGifModal = (props: Props) => {
     >
       <>
         <span className="Modal-Header">
-          <ArrowBackIosIcon onClick={() => props.handleModalClose()}/>
+          <ArrowBackIosIcon 
+            style={{cursor: 'pointer'}}
+            onClick={() => props.handleModalClose()}
+          />
           <h2>{props.title}</h2>
         </span>
         {props.displayGifComponent}
