@@ -8,3 +8,10 @@
   flex-wrap: wrap;
   justify-content: center;
 }
+
+.Searched-Image {
+  cursor: pointer;
+  margin: 5px;
+  width: 250px;
+  height: 200px;
+}

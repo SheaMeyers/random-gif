@@ -110,10 +110,8 @@ const App = () => {
         return (
           <img
             src={result.images["480w_still"].url}
-            height="200"
-            width="250"
             alt={result.title}
-            style={{cursor: 'pointer'}}
+            className="Searched-Image"
             onClick={() =>
               dispatch({
                 type: "SET_MODAL_GIF",
