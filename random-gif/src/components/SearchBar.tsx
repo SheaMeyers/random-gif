@@ -6,6 +6,7 @@ import CancelIcon from "@mui/icons-material/Cancel";
 import SearchIcon from "@mui/icons-material/Search";
 
 interface Props {
+  displayCancelButton: boolean;
   searchText: string;
   handleOnFocus: Function;
   handleClearText: Function;
@@ -41,13 +42,15 @@ const SearchBar = (props: Props) => {
         }}
         onChange={(event) => props.handleSearchTextChange(event.target.value)}
       />
-      <Button
-        variant="contained"
-        color="error"
-        onClick={() => props.handleSearchCancel()}
-      >
-        Cancel
-      </Button>
+      {props.displayCancelButton && (
+        <Button
+          variant="contained"
+          color="error"
+          onClick={() => props.handleSearchCancel()}
+        >
+          Cancel
+        </Button>
+      )}
     </>
   );
 };

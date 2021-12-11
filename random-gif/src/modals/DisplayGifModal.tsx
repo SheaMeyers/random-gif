@@ -11,6 +11,7 @@ interface Props {
 const DisplayGifModal = (props: Props) => {
   return (
     <Modal
+      appElement={document.body}
       isOpen={props.isOpen}
       contentLabel="Forgot Password Modal"
       closeTimeoutMS={200}

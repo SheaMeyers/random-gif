@@ -1,10 +1,11 @@
-import React, { useReducer, useEffect } from "react";
+import { useReducer, useEffect } from "react";
 import axios from "axios";
 import { giphyApiKey } from "./keys";
 import DisplayGif from "./components/DisplayGif";
 import SearchBar from "./components/SearchBar";
 import DisplayGifModal from "./modals/DisplayGifModal";
 import "./css/App.css";
+
 
 const initialState = {
   shouldDisplayModalGif: false,
@@ -15,6 +16,7 @@ const initialState = {
   rating: "",
   searchedGifs: [],
 };
+
 
 const reducer = (state: any, action: any) => {
   switch (action.type) {
@@ -34,6 +36,7 @@ const reducer = (state: any, action: any) => {
       return {
         ...state,
         searchText: "",
+        searchedGifs: [],
       };
     case "SEARCH_TEXT_FOCUSED":
       return {
@@ -70,7 +73,8 @@ const reducer = (state: any, action: any) => {
   }
 };
 
-function App() {
+
+const App = () => {
   const newGifInterval = 10000; // 10 seconds
   const gifSearchLimit = 10; // number of results
 
@@ -80,7 +84,6 @@ function App() {
     <DisplayGif src={state.src} title={state.title} rating={state.rating} />
   );
 
-  // TODO Move to utils file?
   const getNewRandomGif = () => {
     axios
       .get(`https://api.giphy.com/v1/gifs/random?api_key=${giphyApiKey}`)
@@ -88,28 +91,27 @@ function App() {
       .catch((error) => console.log(error));
   };
 
-  // TODO Move to utils file?
   const getSearchGifElements = async () => {
     if (state.searchText < 2) {
       return;
     }
 
-    const result = await axios.get(
+    const response = await axios.get(
       `https://api.giphy.com/v1/gifs/search?api_key=${giphyApiKey}&q=${state.searchText}&limit=${gifSearchLimit}`
     );
-    const searchedGifs = result.data.data.map((obj: any, index: number) => {
+    const searchedGifs = response.data.data.map((result: any, index: number) => {
       return (
         <img
-          src={obj.images["480w_still"].url}
+          src={result.images["480w_still"].url}
           height="200"
           width="250"
-          alt={obj.title}
+          alt={result.title}
           onClick={() =>
             dispatch({
               type: "SET_MODAL_GIF",
-              embed_url: obj.embed_url,
-              title: obj.title,
-              rating: obj.rating,
+              embed_url: result.embed_url,
+              title: result.title,
+              rating: result.rating,
             })
           }
           key={index}
@@ -140,6 +142,7 @@ function App() {
   return (
     <div className="App">
       <SearchBar
+        displayCancelButton={state.isSearchingForGifs}
         searchText={state.searchText}
         handleOnFocus={handleSearchFocus}
         handleClearText={handleClearSearchText}
