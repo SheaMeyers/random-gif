@@ -1,6 +1,6 @@
 {
-  "short_name": "React App",
-  "name": "Create React App Sample",
+  "short_name": "Random Gif",
+  "name": "Random Gif with Search",
   "icons": [
     {
       "src": "favicon.ico",
