@@ -76,7 +76,7 @@ const reducer = (state: any, action: any) => {
 };
 
 const App = () => {
-  const newGifInterval = 10000000; // 10 seconds
+  const newGifInterval = 10000; // 10 seconds
   const gifSearchLimit = 10; // number of results
 
   const [state, dispatch] = useReducer(reducer, initialState);
@@ -165,7 +165,7 @@ const App = () => {
         // Display search results
         <>
           <p>Search results</p>
-          <p>{state.searchedGifs}</p>
+          <div className="Search-Gifs">{state.searchedGifs}</div>
         </>
       ) : (
         // No search text, display random gif

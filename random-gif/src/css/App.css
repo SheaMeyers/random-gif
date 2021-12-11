@@ -2,3 +2,9 @@
   text-align: center;
   padding: 1rem;
 }
+
+.Search-Gifs {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+}
