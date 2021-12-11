@@ -18,6 +18,7 @@ const DisplayGifModal = (props: Props) => {
     >
       <div>
         <ArrowBackIosIcon onClick={() => props.handleModalClose()}/>
+        {/* TODO Use new component here */}
         <iframe
             src={props.gifSrc}
             title="random-gif"

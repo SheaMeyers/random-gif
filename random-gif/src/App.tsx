@@ -7,9 +7,9 @@ import TextField from "@mui/material/TextField";
 import CancelIcon from "@mui/icons-material/Cancel";
 import SearchIcon from "@mui/icons-material/Search";
 import { giphyApiKey } from "./keys";
-import DisplayGifModal from "./GifModal";
+import DisplayGifModal from "./DisplayGifModal";
 import "./App.css";
-import "./Modal.css";
+
 
 const initialState = {
   displayModalGif: false,
@@ -21,6 +21,7 @@ const initialState = {
   title: "",
   rating: "",
 };
+
 
 const reducer = (state: any, action: any) => {
   switch (action.type) {
@@ -61,41 +62,50 @@ const reducer = (state: any, action: any) => {
       return {
         ...state,
         displayModalGif: true,
-        modalGif: action.modalGif,
+        src: action.embed_url,
+        title: action.title,
+        rating: action.rating,
       };
     case "CLOSE_MODAL":
       return {
         ...state,
         displayModalGif: false,
-        modalGif: "",
       };
     default:
+      console.warn(`Reducer action ${action.type} did not match any cases`)
       return state;
   }
 };
 
 function App() {
-  const [state, dispatch] = useReducer(reducer, initialState);
   const newGifInterval = 10000; // 10 seconds
+  const gifSearchLimit = 10;  // number of results
+
+  const [state, dispatch] = useReducer(reducer, initialState);
+
+  const getNewRandomGif = () => {
+    axios.get(`https://api.giphy.com/v1/gifs/random?api_key=${giphyApiKey}`)
+      .then(response => dispatch({ ...response.data.data, type: 'NEW_GIF' }))
+      .catch(error => console.log(error));
+  }
 
   const closeGifModal = () => dispatch({ type: "CLOSE_MODAL" });
 
   const getNewGif = () => {
-    if (state.searchText) {
+    if (state.isSearchTextFocused) {
       return;
     }
 
-    axios.get(`https://api.giphy.com/v1/gifs/random?api_key=${giphyApiKey}`)
-      .then(response => dispatch({ ...response.data.data, type: 'NEW_GIF' }))
-      .catch(error => console.log(error));
+    getNewRandomGif();
   };
 
   const getSearchGifs = async () => {
     if (state.searchText < 2) {
       return;
     }
+
     const result = await axios.get(
-      `https://api.giphy.com/v1/gifs/search?api_key=${giphyApiKey}&q=${state.searchText}&limit=10`
+      `https://api.giphy.com/v1/gifs/search?api_key=${giphyApiKey}&q=${state.searchText}&limit=${gifSearchLimit}`
     );
     const searchedGifs = result.data.data.map((obj: any, index: number) => {
       return (
@@ -104,7 +114,14 @@ function App() {
           height="200"
           width="250"
           alt={obj.title}
-          onClick={() => dispatch({ type: "SET_MODAL_GIF", modalGif: obj.embed_url })}
+          onClick={() =>
+            dispatch({
+              type: "SET_MODAL_GIF",
+              src: obj.embed_url,
+              title: obj.title,
+              rating: obj.rating,
+            })
+          }
           key={index}
         />
       );
@@ -116,11 +133,15 @@ function App() {
     getNewGif();
     const interval = setInterval(getNewGif, newGifInterval);
     return () => clearInterval(interval);
-  }, []);
+  });
 
   return (
     <div className="App">
       <div>
+        {/* TODO Make this a search component
+        - Pass value down into search component
+        - Pass function that component calls for updated value
+        - Pass function for button to call to cancel text */}
         <TextField
           label="Search"
           variant="outlined"
@@ -166,7 +187,11 @@ function App() {
         </>
       ) : (
         // No search text, display random gif
+        // TODO Make this a component
+        // - Pass down values into component
+        // - Reuse the new component in the modal
         <>
+          <p>Random selected gif: </p>
           <iframe
             src={state.src}
             title="random-gif"
@@ -190,10 +215,11 @@ function App() {
           </div>
         </>
       )}
+      {/* Pass gif component here?  Into the modal? */}
       <DisplayGifModal
         isOpen={state.displayModalGif}
         handleModalClose={closeGifModal}
-        gifSrc={state.modalGif}
+        gifSrc={state.src}
       />
     </div>
   );
