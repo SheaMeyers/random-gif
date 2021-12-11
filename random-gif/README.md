@@ -1,10 +1,24 @@
 # Random Gif
 
+## App Architecture
+
+I used `create-react-app` to generate the initial code.
+
+All of the app related code can be found in the `src` folder.  Here you can find `App.tsx` which is the main component rendered by `ReactDOM.render` in `index.tsx`.
+Within `src` there are four other folders.
+
+- `components` - Contains components that could be reused
+- `css` - Contains the css code for styling the app
+- `modals` - Contains the modal which displays a selected gif to the user
+- `tests` - Contains unit tests for the app
+
+I used this architecture as it is similar to the architecture you get when using `create-react-app` while also keeping similar files in clear directories.
+
 ## Libraries used
 
-- `axios` - I prefer using this over `fetch`, though `fetch` could have been used 
-- `material ui and icon` - I like using this library as I find the components are easy to use and aesthetically pleasing
-- `react modal` - I used this to display the gif that a user selects (Fig 3)
+- [axios](https://www.npmjs.com/package/axios): I prefer using this over `fetch`, though `fetch` could have been used 
+- [MUI](https://www.npmjs.com/package/@mui/material) and [Material Icons](https://www.npmjs.com/package/@mui/icons-material): I like using this library as I find the components are easy to use and aesthetically pleasing
+- [react-modal](https://www.npmjs.com/package/react-modal): I used this to display the gif that a user selects (Fig 3)
 
 ## React Modal vs React Router
 
