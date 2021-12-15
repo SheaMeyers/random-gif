@@ -10,7 +10,7 @@ interface Props {
 const DisplayGif = (props: Props) => {
     return (
         <>
-            <iframe
+          <iframe
             src={props.src}
             title="random-gif"
             width="480"
