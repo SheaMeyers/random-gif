@@ -105,8 +105,7 @@ const App = () => {
     const response = await axios.get(
       `https://api.giphy.com/v1/gifs/search?api_key=${giphyApiKey}&q=${state.searchText}&limit=${gifSearchLimit}`
     );
-    const searchedGifs = response.data.data.map(
-      (result: any, index: number) => {
+    const searchedGifs = response.data.data.map((result: any) => {
         return (
           <img
             src={result.images["480w_still"].url}
@@ -121,7 +120,7 @@ const App = () => {
                 rating: result.rating,
               })
             }
-            key={index}
+            key={result.embed_url}
           />
         );
       }
