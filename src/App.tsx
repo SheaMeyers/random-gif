@@ -1,5 +1,7 @@
 import { useReducer, useEffect } from "react";
 import axios from "axios";
+import Card from '@mui/material/Card';
+import CardContent from '@mui/material/CardContent';
 import { giphyApiKey } from "./keys";
 import reducer, { initialState } from "./reducer";
 import DisplayGif from "./components/DisplayGif";
@@ -99,10 +101,12 @@ const App = () => {
         </>
       ) : (
         // No search text, display random gif
-        <>
-          <p>Random selected gif: </p>
-          {gifComponent}
-        </>
+        <Card sx={{ maxWidth: 600 }}>
+          <CardContent>
+            <p>Random selected gif: </p>
+            {gifComponent}
+          </CardContent>
+        </Card>
       )}
       <DisplayGifModal
         isOpen={state.shouldDisplayModalGif}

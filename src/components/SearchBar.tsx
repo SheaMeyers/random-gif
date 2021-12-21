@@ -19,10 +19,10 @@ const SearchBar = (props: Props) => {
   return (
     <div className="Search-Bar">
       <TextField
-        label="Search"
         variant="outlined"
         value={props.searchText}
         onFocus={() => props.handleOnFocus()}
+        sx={{ background: 'white' }}
         InputProps={{
           startAdornment: (
             <InputAdornment position="start">
@@ -45,6 +45,7 @@ const SearchBar = (props: Props) => {
       />
       {props.displayCancelButton && (
         <Button
+          sx={{ marginLeft: '1rem' }}
           variant="contained"
           color="error"
           onClick={() => props.handleSearchCancel()}
