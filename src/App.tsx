@@ -1,10 +1,11 @@
 import { useReducer, useEffect } from "react";
 import axios from "axios";
-import Card from '@mui/material/Card';
-import CardContent from '@mui/material/CardContent';
+import Card from "@mui/material/Card";
+import CardContent from "@mui/material/CardContent";
 import { giphyApiKey } from "./keys";
 import reducer, { initialState } from "./reducer";
 import DisplayGif from "./components/DisplayGif";
+import GithubLink from "./components/GithubLink";
 import SearchBar from "./components/SearchBar";
 import DisplayGifModal from "./modals/DisplayGifModal";
 import "./css/App.css";
@@ -32,14 +33,11 @@ const App = () => {
       .catch((error) => console.log(error));
   };
 
-  const getSearchGifElements = async () => {
-    if (state.searchText < 2) {
-      return;
-    }
-
+  const getSearchGifElements = async (searchText: string) => {
     const response = await axios.get(
-      `https://api.giphy.com/v1/gifs/search?api_key=${giphyApiKey}&q=${state.searchText}&limit=${gifSearchLimit}`
+      `https://api.giphy.com/v1/gifs/search?api_key=${giphyApiKey}&q=${searchText}&limit=${gifSearchLimit}`
     );
+    
     const searchedGifs = response.data.data.map((result: any) => {
         return (
           <img
@@ -67,7 +65,11 @@ const App = () => {
 
   const handleSearchTextChange = (searchText: string) => {
     dispatch({ type: "SET_TEXT", searchText });
-    getSearchGifElements();
+    if (searchText.length < 1) {
+      dispatch({ type: "CLEAR_TEXT" });
+    } else {
+      getSearchGifElements(searchText);
+    }
   };
   const handleSearchCancelClick = () =>
     dispatch({ type: "SEARCH_TEXT_UNFOCUSED" });
@@ -84,6 +86,7 @@ const App = () => {
 
   return (
     <div className="App">
+      <GithubLink />
       <SearchBar
         displayCancelButton={state.isSearchingForGifs}
         searchText={state.searchText}
