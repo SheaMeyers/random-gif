@@ -5,7 +5,7 @@ import CardContent from "@mui/material/CardContent";
 import { giphyApiKey } from "./keys";
 import reducer, { initialState } from "./reducer";
 import DisplayGif from "./components/DisplayGif";
-import GithubLink from "./components/GithubLink";
+import Header from "./components/Header";
 import SearchBar from "./components/SearchBar";
 import DisplayGifModal from "./modals/DisplayGifModal";
 import "./css/App.css";
@@ -86,7 +86,7 @@ const App = () => {
 
   return (
     <div className="App">
-      <GithubLink />
+      <Header />
       <SearchBar
         displayCancelButton={state.isSearchingForGifs}
         searchText={state.searchText}
