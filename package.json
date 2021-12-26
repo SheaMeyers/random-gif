@@ -2,6 +2,8 @@
   "name": "random-gif",
   "version": "0.1.0",
   "private": true,
+  "repository": "https://github.com/SheaMeyers/random-gif.git",
+  "homepage": "https://random-gif.sheameyers.com",
   "dependencies": {
     "@emotion/react": "^11.7.0",
     "@emotion/styled": "^11.6.0",
@@ -26,7 +28,8 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d build"
   },
   "eslintConfig": {
     "extends": [
@@ -48,6 +51,7 @@
   },
   "devDependencies": {
     "@types/react-modal": "^3.13.1",
+    "gh-pages": "^3.2.3",
     "msw": "^0.36.3"
   }
 }
