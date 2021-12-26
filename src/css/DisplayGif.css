@@ -1,3 +1,8 @@
+.Gif {
+    width: 30vw;
+    height: 20vw;
+}
+
 .Gif-Info {
     display: flex;
     justify-content: center;
@@ -6,7 +11,7 @@
 .Gif-Info__Container {
     display: flex;
     justify-content: space-between;
-    width: 480px;
+    width: 100%;
 }
 
 .Gif-Info__Title-and-Rating {
@@ -25,4 +30,4 @@
     display: flex;
     align-items: center;
     justify-content: center;
-  }
+}
