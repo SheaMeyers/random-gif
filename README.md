@@ -16,7 +16,7 @@ Within `src` there are four other folders.
 
 - [axios](https://www.npmjs.com/package/axios): I prefer using this over `fetch`, though `fetch` could have been used 
 - [MUI](https://www.npmjs.com/package/@mui/material) and [Material Icons](https://www.npmjs.com/package/@mui/icons-material): I like using this library as I find the components are easy to use and aesthetically pleasing
-- [react-modal](https://www.npmjs.com/package/react-modal): I used this to display the gif that a user selects (Fig 3)
+- [react-modal](https://www.npmjs.com/package/react-modal): I used this to display the gif that a user selects
 - [msw](https://www.npmjs.com/package/msw): Used to mock external requests for the unit tests
 
 ### `npm start`
