@@ -29,4 +29,4 @@ Runs the test suite.  There are a few tests to test the functionality of the app
 
 ## Live Demo
 
-https://random-gif.sheameyers.com/
+https://findagiphy.com/
